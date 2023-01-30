@@ -1,4 +1,5 @@
-
+const schedule = require('node-schedule');
+let job;
 var telegram_bot = require('node-telegram-bot-api')
 var request = require('request')
 
@@ -15,9 +16,9 @@ bot.onText(/\/city (.+)/, function (msg, match) {
 	var city = match[1];
 	var chatId = msg.chat.id
 	var query ='http://api.openweathermap.org/data/2.5/weather?q='+ city + '&appid=6ce67c04b5565d320c6225d0ff681963';
-	request(query, function (error, response, body) {
+		request(query, function (error, response, body) {
 	if (!error && response.statusCode == 200) {
-		bot.sendMessage(chatId,
+		job = schedule.scheduleJob("* * * * *",() => {bot.sendMessage(chatId,
 			'_Looking for details of_ ' + city
 				+ '...', { parse_mode: "Markdown" })
 				.then((msg)=> {
@@ -44,14 +45,13 @@ bot.onText(/\/city (.+)/, function (msg, match) {
 					rise.toLocaleTimeString() +
 					' \nSunset: ' +
 					set.toLocaleTimeString() +
-					'\nCountry: ' + res.sys.country)
-			})
-
-			
-			
-			
-			
-			
+					'\nCountry: ' + res.sys.country)})
+			})			
 		}
 	})
 })
+bot.onText(/\/stop/, message => {
+    if (job) {
+        job.cancel()
+    }
+});
