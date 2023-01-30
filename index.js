@@ -51,6 +51,7 @@ bot.onText(/\/city (.+)/, function (msg, match) {
 	})
 })
 bot.onText(/\/stop/, message => {
+	console.log('stopping');
     if (job) {
         job.cancel()
     }
